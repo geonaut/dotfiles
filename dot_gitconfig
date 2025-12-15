@@ -1,0 +1,10 @@
+[user]
+	name = Oliver Bazely
+	email = oliver@thoughtmachine.net
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+[core]
+	pager = less -F -X
