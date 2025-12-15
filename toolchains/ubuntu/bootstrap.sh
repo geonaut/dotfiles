@@ -36,7 +36,7 @@ echo "Detected package manager: $PKG_MANAGER"
 
 # --- 2. Install Tools (Idempotent Check) ---
 
-REQUIRED_TOOLS=("zsh" "git" "jq" "curl" "wget")
+REQUIRED_TOOLS=("zsh" "git" "jq" "curl" "wget", "tmux")
 CHEZMOI_INSTALL_DIR="/usr/local/bin"
 
 # Only run update if necessary (often slow)
