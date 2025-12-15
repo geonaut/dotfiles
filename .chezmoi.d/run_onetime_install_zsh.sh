@@ -11,10 +11,23 @@ ZSH_CUSTOM_DIR="$HOME/.oh-my-zsh"
 
 # Check if zsh is installed
 if ! command -v zsh &> /dev/null; then
-    echo "Zsh not found. Installing now..."
-    # Assuming Debian/Ubuntu, adapt for Fedora/Arch
-    sudo apt update
-    sudo apt install -y zsh
+    echo "Zsh not found. Attempting installation..."
+
+    # Check for sudo. If it exists, use it. If not, try apt directly (as root)
+    if command -v sudo &> /dev/null; then
+        SUDO_CMD="sudo"
+    else
+        SUDO_CMD=""
+    fi
+
+    # Use the determined command prefix
+    $SUDO_CMD apt update
+    $SUDO_CMD apt install -y zsh
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Zsh installation failed. Check container permissions."
+        exit 1
+    fi
 fi
 
 # --- 2. Install Oh My Zsh ---
