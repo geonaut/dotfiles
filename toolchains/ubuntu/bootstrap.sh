@@ -73,7 +73,36 @@ echo "✅ Essential toolchain is installed."
 echo "Your next step is to configure your shell and dotfiles."
 echo "----------------------------------------------------"
 
-# Optional: Set zsh as default shell (requires the user's password for chsh)
-# if command -v chsh &> /dev/null && [ "$SHELL" != "$(which zsh)" ]; then
-#     echo "To set zsh as your default shell, run: chsh -s \$(which zsh)"
-# fi
+# --- 4. Set Zsh as the Default Shell ---
+
+if command -v zsh &> /dev/null; then
+    ZSH_PATH=$(which zsh)
+    CURRENT_SHELL="$SHELL"
+    TARGET_USER=$(whoami)
+
+    if [ "$CURRENT_SHELL" != "$ZSH_PATH" ]; then
+        echo "Attempting to change default shell for user $TARGET_USER to $ZSH_PATH..."
+
+        # The 'chsh' command requires root privileges (or sudo) and often prompts for a password.
+        # Since this script is likely run with 'sudo' already, we use the SUDO_CMD.
+        if command -v chsh &> /dev/null; then
+            if [ -n "$SUDO_CMD" ]; then
+                # Requires the user's password if the sudo timeout has expired.
+                $SUDO_CMD chsh -s "$ZSH_PATH" "$TARGET_USER"
+
+                if [ $? -eq 0 ]; then
+                    echo "✅ Default shell successfully set for $TARGET_USER."
+                    echo "NOTE: You must 'exit' your current session and start a new one (or log in again) to use Zsh."
+                else
+                    echo "⚠️ WARNING: Failed to change default shell via chsh. Password may be required."
+                fi
+            else
+                echo "⚠️ WARNING: Cannot change default shell. 'chsh' requires root privileges or 'sudo'."
+            fi
+        fi
+    else
+        echo "Default shell is already set to Zsh."
+    fi
+fi
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
