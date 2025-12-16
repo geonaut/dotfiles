@@ -83,7 +83,7 @@ zstyle ':omz:update' mode auto      # update automatically without asking
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting you-should-use zsh-bat)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-bat)
 
 # User configuration
 
@@ -129,6 +129,7 @@ bindkey '^R' history-incremental-search-backward
 alias cm='chezmoi'
 alias cm_apply='chezmoi apply && source ~/.zshrc'
 alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
+alias cm_bootstrap='~/.local/share/chezmoi/toolchains/macos/bootstrap.sh'
 
 # --- EZA Aliases (ls replacement) ---
 alias ls='eza'
@@ -145,7 +146,10 @@ alias lS='eza -lhrS --header' # Sorted by size, human-readable
 # Tree view (ignoring common clutter directories)
 alias tree='eza -T -I "node_modules|__pycache__|.git|target"'
 
-# The final, confirmed working version for external scripting
+### TMUX
+
+export TERM=screen-256color
+
 go_tmux() {
     local SESSION_NAME="main"
 
