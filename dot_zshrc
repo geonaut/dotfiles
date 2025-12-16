@@ -129,8 +129,10 @@ bindkey '^R' history-incremental-search-backward
 alias cm='chezmoi'
 alias cm_apply='chezmoi apply && source ~/.zshrc'
 alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
-alias cm_bootstrap='~/.local/share/chezmoi/toolchains/macos/bootstrap.sh'
+alias cm_bootstrap_mac='~/.local/share/chezmoi/toolchains/macos/bootstrap.sh'
+alias cm_bootstrap_linux='~/.local/share/chezmoi/toolchains/ubuntu/bootstrap.sh'
 
+{{ if eq .chezmoi.os "darwin" -}}
 # --- EZA Aliases (ls replacement) ---
 alias ls='eza'
 
@@ -142,6 +144,7 @@ alias ll='eza -la --git --header' # Note: 'la' here includes hidden files
 alias la='eza -la --git'
 alias lt='eza -latr --header' # Sorted by time, reverse (newest at bottom)
 alias lS='eza -lhrS --header' # Sorted by size, human-readable
+{{ end -}}
 
 # Tree view (ignoring common clutter directories)
 alias tree='eza -T -I "node_modules|__pycache__|.git|target"'
