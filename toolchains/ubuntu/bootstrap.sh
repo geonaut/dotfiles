@@ -179,3 +179,20 @@ install_powerlevel10k_theme() {
 }
 
 install_powerlevel10k_theme
+
+echo "Changing default shell for user $USER_NAME to Zsh..."
+
+# Use chsh (change shell) command to set Zsh as the default
+# The -s flag specifies the path to the new shell
+chsh -s "$(which zsh)" "$USER_NAME"
+
+# Check the exit status of the chsh command
+if [ $? -eq 0 ]; then
+    echo "Successfully changed default shell to Zsh for $USER_NAME."
+    echo "---------------------------------------------------------"
+    echo "ACTION REQUIRED: Please log out and log back in (or reboot) to start using Zsh."
+    echo "---------------------------------------------------------"
+else
+    echo "ERROR: Failed to change default shell. Please check your password and try manually:"
+    echo "chsh -s \$(which zsh)"
+fi
