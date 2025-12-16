@@ -1,0 +1,23 @@
+{{- if eq .chezmoi.os "darwin" -}}
+# Command-line tools
+brew "git"
+brew "zsh"
+brew "chezmoi"
+brew "jq"
+brew "tmux"
+brew "htop"
+brew "wget"
+brew "kubernetes-cli"
+brew "podman"
+brew "docker"
+brew "eza"
+
+# Lanaguage managers
+brew "pyenv"
+brew "rustup-init"
+brew "goenv"
+
+# Applications (Casks)
+cask "visual-studio-code"
+cask "ghostty"
+{{ end -}}

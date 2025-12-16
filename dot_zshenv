@@ -1,0 +1,18 @@
+# LC_COLLATE set to C to make ls sort by alphanumeric
+export LANG=en_US.UTF-8
+export LC_COLLATE=C
+
+if [[ $+commands[go] ]]; then
+  export GOPATH=~/.go
+  path=($GOPATH/bin $path[@])
+fi
+
+if [[ -d "/usr/lib/rustup/bin" ]]; then
+  path=("/usr/bin/rustup/bin" $path[@])
+fi
+
+path=($path[@] "$HOME/.local/bin")
+
+if [[ -f "${HOME}/.zshenv.local" ]]; then
+  source "${HOME}/.zshenv.local"
+fi
