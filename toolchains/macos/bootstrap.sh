@@ -11,7 +11,7 @@ CHEZMOI_REPO="https://github.com/geonaut/dotfiles.git"
 OH_MY_ZSH_PLUGINS_TO_CLONE=(
     "https://github.com/zsh-users/zsh-syntax-highlighting.git"
     "https://github.com/zsh-users/zsh-autosuggestions.git"
-    # "https://github.com/romkatv/powerlevel10k.git"
+    "https://github.com/fdellwing/zsh-bat.git"
 )
 
 # -------------------------------------------------------------------
@@ -57,7 +57,7 @@ install_homebrew() {
         echo "Homebrew not found. Installing Homebrew..."
         
         # Install Homebrew silently
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" &> /dev/null
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
         # Add Homebrew to PATH immediately for use in this script
         if [[ "$(uname -m)" == "arm64" ]]; then
