@@ -122,8 +122,13 @@ if [ -f '/Users/oliverbazely/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/ol
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/oliverbazely/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/oliverbazely/google-cloud-sdk/completion.zsh.inc'; fi
 
-# tmux start-server
-# alias go_tmux="~/.tmux/go_tmux.sh"
+bindkey '^R' history-incremental-search-backward
+
+# Chezmoi aliases
+
+alias cm='chezmoi'
+alias cm_apply='chezmoi apply && source ~/.zshrc'
+alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
 
 # --- EZA Aliases (ls replacement) ---
 alias ls='eza'
