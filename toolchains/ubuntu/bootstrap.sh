@@ -6,6 +6,13 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Function to execute commands silently (default behavior)
+run_command() {
+    # All commands are executed silently unless the function uses 'echo'
+    local cmd="$@"
+    eval "$cmd" &> /dev/null
+}
+
 # Function for status messages
 status() {
     echo -e "${GREEN}✅ $1${RESET}"
