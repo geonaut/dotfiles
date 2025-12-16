@@ -60,7 +60,7 @@ if ! command -v chezmoi &> /dev/null; then
     echo "Installing chezmoi..."
     # Download the installation script and pipe it to bash
     # -fsSL ensures secure, silent, follow-redirect download
-    curl -fsSL https://chezmoi.io/install | sh -s -- -b "$CHEZMOI_INSTALL_DIR"
+    sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$CHEZMOI_INSTALL_DIR"
     echo "chezmoi installed to $CHEZMOI_INSTALL_DIR"
 else
     echo "chezmoi is already installed."
