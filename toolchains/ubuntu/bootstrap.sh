@@ -155,3 +155,18 @@ OH_MY_ZSH_PLUGINS_TO_CLONE=(
 )
 
 install_oh_my_zsh_minimal
+
+install_powerlevel10k_theme() {
+    echo -e "## ${YELLOW}Installing Powerlevel10k Theme...${RESET}"
+    local P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+    local P10K_REPO="https://github.com/romkatv/powerlevel10k.git"
+
+    if [ ! -d "$P10K_DIR" ]; then
+        echo "Cloning Powerlevel10k into themes directory..."
+        # Clones directly into the themes directory where OMZ expects it
+        run_command "git clone --depth=1 $P10K_REPO $P10K_DIR"
+        status "Powerlevel10k cloned."
+    else
+        echo "Powerlevel10k theme already exists. Skipping clone."
+    fi
+}
