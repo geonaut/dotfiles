@@ -6,6 +6,21 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Function for status messages
+status() {
+    echo -e "${GREEN}✅ $1${RESET}"
+}
+
+# Function for warning messages
+warn() {
+    echo -e "${YELLOW}⚠️ $1${RESET}"
+}
+
+# Function for error messages
+error() {
+    echo -e "${RED}🛑 $1${RESET}"
+}
+
 # --- 1. Identify Package Manager and Privilege Escalation ---
 
 # Determine the privilege command (sudo)
