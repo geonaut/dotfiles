@@ -170,3 +170,5 @@ install_powerlevel10k_theme() {
         echo "Powerlevel10k theme already exists. Skipping clone."
     fi
 }
+
+install_powerlevel10k_theme
