@@ -180,6 +180,8 @@ install_powerlevel10k_theme() {
 
 install_powerlevel10k_theme
 
+USER_NAME=$(whoami)
+
 echo "Changing default shell for user $USER_NAME to Zsh..."
 
 # Use chsh (change shell) command to set Zsh as the default
