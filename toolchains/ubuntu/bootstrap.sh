@@ -37,7 +37,7 @@ echo "Detected package manager: $PKG_MANAGER"
 # --- 2. Install Tools (Idempotent Check) ---
 
 REQUIRED_TOOLS=("zsh" "git" "jq" "curl" "wget" "tmux")
-CHEZMOI_INSTALL_DIR="/usr/local/bin"
+CHEZMOI_INSTALL_DIR="$HOME/.local/bin"
 
 # Only run update if necessary (often slow)
 if [ "$PKG_MANAGER" != "dnf" ] && [ "$PKG_MANAGER" != "yum" ]; then
@@ -60,7 +60,7 @@ if ! command -v chezmoi &> /dev/null; then
     echo "Installing chezmoi..."
     # Download the installation script and pipe it to bash
     # -fsSL ensures secure, silent, follow-redirect download
-    sudo sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$CHEZMOI_INSTALL_DIR"
+    sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$CHEZMOI_INSTALL_DIR"
     echo "chezmoi installed to $CHEZMOI_INSTALL_DIR"
 else
     echo "chezmoi is already installed."
