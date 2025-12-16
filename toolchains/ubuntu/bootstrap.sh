@@ -105,4 +105,38 @@ if command -v zsh &> /dev/null; then
     fi
 fi
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+install_oh_my_zsh_minimal() {
+    echo -e "## ${YELLOW}2. Installing Oh My Zsh (Pre-Config)...${RESET}"
+    
+    # Install Oh My Zsh if not present
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        echo "Installing Oh My Zsh structure..."
+        # Install without prompting to change shell, suppress output
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended &> /dev/null
+        status "Oh My Zsh structure installed."
+    else
+        echo "Oh My Zsh is already installed."
+    fi
+    
+    # Clone Zsh plugins (always necessary since OMZ doesn't manage these repos)
+    ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+    for repo_url in "${OH_MY_ZSH_PLUGINS_TO_CLONE[@]}"; do
+        plugin_name=$(basename "$repo_url" .git)
+        plugin_dir="${ZSH_CUSTOM}/plugins/$plugin_name"
+        if [ ! -d "$plugin_dir" ]; then
+            echo "Cloning $plugin_name..."
+            run_command "git clone $repo_url $plugin_dir"
+            status "Cloned $plugin_name."
+        else
+            echo "$plugin_name already exists. Skipping clone."
+        fi
+    done
+}
+
+OH_MY_ZSH_PLUGINS_TO_CLONE=(
+    "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+    "https://github.com/zsh-users/zsh-autosuggestions.git"
+    "https://github.com/fdellwing/zsh-bat.git"
+)
+
+install_oh_my_zsh_minimal
