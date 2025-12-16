@@ -125,7 +125,7 @@ install_oh_my_zsh_minimal() {
         plugin_dir="${ZSH_CUSTOM}/plugins/$plugin_name"
         if [ ! -d "$plugin_dir" ]; then
             echo "Cloning $plugin_name..."
-            run_command "git clone $repo_url $plugin_dir"
+            git clone $repo_url $plugin_dir
             status "Cloned $plugin_name."
         else
             echo "$plugin_name already exists. Skipping clone."
