@@ -144,14 +144,12 @@ alias ll='eza -la --git --header' # Note: 'la' here includes hidden files
 alias la='eza -la --git'
 alias lt='eza -latr --header' # Sorted by time, reverse (newest at bottom)
 alias lS='eza -lhrS --header' # Sorted by size, human-readable
-{{ end -}}
 
 # Tree view (ignoring common clutter directories)
 alias tree='eza -T -I "node_modules|__pycache__|.git|target"'
+{{ end -}}
 
 ### TMUX
-
-export TERM=screen-256color
 
 go_tmux() {
     local SESSION_NAME="main"
