@@ -5,14 +5,16 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
 # Path to Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
 plugins=(git zsh-autosuggestions zsh-bat)
 
 # Source Oh My Zsh.
@@ -20,18 +22,6 @@ if [ -f "$ZSH/oh-my-zsh.sh" ]; then
     source "$ZSH/oh-my-zsh.sh"
 fi
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="custom/themes/powerlevel10k/powerlevel10k"
-
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -58,43 +48,12 @@ zstyle ':omz:update' mode auto      # update automatically without asking
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
+ENABLE_CORRECTION="true"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-
-
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_GB.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -128,6 +87,11 @@ if [ -f '/Users/oliverbazely/google-cloud-sdk/completion.zsh.inc' ]; then . '/Us
 
 bindkey '^R' history-incremental-search-backward
 
+#-- ALIASES --#
+
+# Bazel
+alias bz='bazel'
+
 # Chezmoi aliases
 
 alias cm='chezmoi'
@@ -135,23 +99,6 @@ alias cm_apply='chezmoi apply && source ~/.zshrc'
 alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
 alias cm_bootstrap_mac='~/.local/share/chezmoi/toolchains/macos/bootstrap.sh'
 alias cm_bootstrap_linux='~/.local/share/chezmoi/toolchains/ubuntu/bootstrap.sh'
-
-{{ if eq .chezmoi.os "darwin" -}}
-# --- EZA Aliases (ls replacement) ---
-alias ls='eza'
-
-# The daily drivers
-alias l='eza -l --git --header'
-alias ll='eza -la --git --header' # Note: 'la' here includes hidden files
-
-# Utility commands
-alias la='eza -la --git'
-alias lt='eza -latr --header' # Sorted by time, reverse (newest at bottom)
-alias lS='eza -lhrS --header' # Sorted by size, human-readable
-
-# Tree view (ignoring common clutter directories)
-alias tree='eza -T -I "node_modules|__pycache__|.git|target"'
-{{ end -}}
 
 ### TMUX
 
@@ -198,3 +145,16 @@ exit_tmux() {
     # This closes the Ghostty window/tab if it was the last shell running.
     exit
 }
+
+# MAC-ONLY ALIASES
+
+# EZA Aliases
+{{ if eq .chezmoi.os "darwin" -}}
+alias ls='eza'
+alias l='eza -l --git --header'
+alias ll='eza -la --git --header' # Note: 'la' here includes hidden files
+alias la='eza -la --git'
+alias lt='eza -latr --header' # Sorted by time, reverse (newest at bottom)
+alias lS='eza -lhrS --header' # Sorted by size, human-readable
+alias tree='eza -T -I "node_modules|__pycache__|.git|target"'
+{{ end -}}
