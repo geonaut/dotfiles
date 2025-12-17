@@ -144,7 +144,6 @@ install_chezmoi_minimal() {
 install_homebrew
 check_requirements
 install_oh_my_zsh_minimal
-install_powerlevel10k_theme
 install_chezmoi_minimal 
 
 # --- 4. Final Steps (Check and Set Login Shell) ---
