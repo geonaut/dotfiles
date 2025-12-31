@@ -1,0 +1,6 @@
+[data]
+    name = "Geonaut"
+
+{{ if eq .chezmoi.os "darwin" -}}
+scriptTempDir = "~/.config/chezmoi/tmp"
+{{ end -}}
