@@ -99,9 +99,6 @@ if [ -f '/Users/oliverbazely/google-cloud-sdk/completion.zsh.inc' ]; then . '/Us
 
 bindkey '^R' history-incremental-search-backward
 
-# Jetpack Prompt formatting
-export JETPACK_PROMPT_HIDE_EMAIL=1
-
 #-- ALIASES --#
 
 # Bazel (NB:the zsh plugin already provides several)
@@ -163,6 +160,9 @@ exit_tmux() {
 }
 
 # MAC-ONLY ALIASES
+
+# Navigation
+alias go_coding="cd ~/Coding"
 
 # EZA Aliases
 {{ if eq .chezmoi.os "darwin" -}}
