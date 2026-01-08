@@ -1,6 +1,12 @@
 [data]
-    name = "Geonaut"
+    name = "geonaut"
+    # Prompts for true/false. Defaults to true if you just hit enter.
+    install_languages = {{ promptBoolOnce . "install_languages" "Install programming languages (Rust, Python, Go)?" true }}
+
+    # You could even add a 'workstation' flag for more granularity
+    is_server = {{ promptBoolOnce . "is_server" "Is this a headless server?" false }}
+    low_fidelity = {{ promptBoolOnce . "low_fidelity" "Use robust/low-fidelity UI (skip powerline glyphs)?" false }}
 
 {{ if eq .chezmoi.os "darwin" -}}
-scriptTempDir = "~/.config/chezmoi/tmp"
+    scriptTempDir = "~/.config/chezmoi/tmp"
 {{ end -}}

@@ -1,0 +1,25 @@
+#!/bin/bash
+# run_onchange_before_install-ubuntu-dependencies.sh.tmpl
+
+{{ if eq .chezmoi.os "linux" -}}
+echo "📦 Installing Ubuntu system dependencies..."
+
+SUDO_CMD=""
+if command -v sudo &> /dev/null; then SUDO_CMD="sudo"; fi
+
+# Function to wait for the apt lock
+wait_for_apt() {
+    while $SUDO_CMD fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 ; do
+        echo "Waiting for other package managers to finish..."
+        sleep 2
+    done
+}
+
+wait_for_apt
+$SUDO_CMD apt-get update
+
+wait_for_apt
+$SUDO_CMD apt-get install -y build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev curl git
+
+echo "✅ Ubuntu system dependencies installed."
+{{ end -}}

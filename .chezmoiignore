@@ -1,2 +1,16 @@
 README.md
 toolchains/
+
+{{ if ne .chezmoi.os "darwin" -}}
+.chezmoibrew.sh
+.Brewfile
+.config/ghostty/
+{{ end -}}
+
+{{ if ne .chezmoi.os "linux" -}}
+# Add Ubuntu specific files here if any
+{{ end -}}
+
+.oh-my-zsh/cache/**
+.oh-my-zsh/custom/plugins/*/.git
+.zcompdump*
