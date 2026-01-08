@@ -16,10 +16,11 @@ brew "bat"
 brew "thefuck"
 brew "starship"
 
-# Lanaguage managers
+{{ if .install_languages -}}
 brew "pyenv"
 brew "rustup-init"
 brew "goenv"
+{{- end }}
 
 # Applications (Casks)
 cask "visual-studio-code"

@@ -1,0 +1,25 @@
+#!/bin/bash
+# .chezmoiignore ensures this only runs on Linux
+{{ if eq .chezmoi.os "linux" -}}
+
+# This list is your "Brewfile" for Ubuntu
+# Add or remove packages here:
+PACKAGES=(
+    "git"
+    "zsh"
+    "tmux"
+    "htop"
+    "curl"
+    "wget"
+    "jq"
+    "fzf"
+    "bat"
+    "thefuck"
+    "build-essential"
+)
+
+echo "📦 Syncing Apt packages..."
+sudo apt-get update
+sudo apt-get install -y ${PACKAGES[@]}
+
+{{ end -}}

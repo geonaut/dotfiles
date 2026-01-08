@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# .chezmoi.os check ensures brew only runs on macOS
+{{ if eq .chezmoi.os "darwin" -}}
+if command -v brew >/dev/null 2>&1; then
+    brew bundle --global --no-lock
+fi
+{{ end -}}
+
+# Check the opt-in flag from your .chezmoi.toml.tmpl
+{{ if .install_languages -}}
+echo "🚀 Language opt-in detected: Setting up Rust, Python, and Go..."
+
+# 1. Rustup (Cross-platform)
+if ! command -v rustup >/dev/null 2>&1; then
+    echo "🦀 Installing Rustup..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y &> /dev/null
+fi
+
+# 2. Pyenv (Cross-platform)
+# Requires system dependencies installed by your 'run_before' script on Ubuntu
+if command -v pyenv >/dev/null 2>&1; then
+    echo "🐍 Initializing pyenv and installing Python 3.12..."
+    eval "$(pyenv init --path)"
+    if ! pyenv versions --bare | grep -q "3.12"; then
+         # This will use the build-essential tools installed on Ubuntu
+         # or the Xcode tools on macOS.
+         pyenv install 3.12 &> /dev/null
+         pyenv global 3.12
+    fi
+fi
+
+# 3. Goenv (Cross-platform)
+if command -v goenv >/dev/null 2>&1; then
+    echo "🐹 Initializing goenv..."
+    eval "$(goenv init --path)"
+fi
+
+{{ else -}}
+echo "⏭️ Skipping programming languages (opt-in flag is false)."
+{{- end }}
+
+echo "✅ Package installation and language setup complete."

@@ -1,0 +1,46 @@
+# .chezmoiexternal.toml
+
+# Starship: The cross-shell prompt (Universal binary)
+[".local/bin/starship"]
+    type = "archive-file"
+    url = "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-gnu.tar.gz"
+    executable = true
+    path = "starship"
+
+# Eza: A modern replacement for 'ls'
+[".local/bin/eza"]
+    type = "archive-file"
+    {{ if eq .chezmoi.os "linux" -}}
+    url = "https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
+    {{ else if eq .chezmoi.os "darwin" -}}
+    # Homebrew usually handles this on Mac, but you can define it here too
+    url = "https://github.com/eza-community/eza/releases/latest/download/eza_arm64-apple-darwin.tar.gz"
+    {{ end -}}
+    executable = true
+    path = "./eza"
+
+# Oh My Zsh: Managed as an external to keep the bootstrap script light
+[".oh-my-zsh"]
+    type = "archive"
+    url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+    refreshPeriod = "168h"
+
+[".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-autosuggestions/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+
+[".oh-my-zsh/custom/plugins/zsh-bat"]
+    type = "archive"
+    url = "https://github.com/fdellwing/zsh-bat/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
+
+[".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/master.tar.gz"
+    exact = true
+    stripComponents = 1
