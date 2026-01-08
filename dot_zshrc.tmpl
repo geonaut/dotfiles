@@ -83,9 +83,35 @@ bindkey '^[[B' down-line-or-search
 
 #-- ALIASES --#
 
-# Bazel (NB:the zsh plugin already provides several)
+# --- Bazel (Core) ---
 alias bz='bazel'
-alias bazel="bazelisk"
+alias bazel="bazelisk" # Ensures you use the version defined in .bazelversion
+alias bzb='bazel build'
+alias bzt='bazel test'
+alias bzr='bazel run'
+alias bzc='bazel clean'
+alias bzce='bazel clean --expunge' # The "Nuclear" option for clearing cache
+
+# --- Bzlmod & Dependency Management ---
+alias bztidy='bazel mod tidy' # The "Sync" button for Bzlmod
+alias bzgraph='bazel mod graph' # Visualizes your external dependencies
+alias bzshow='bazel mod show_repo' # Inspects a specific external repo
+
+# --- Gazelle (The Generator) ---
+# Quickly regenerate all BUILD files
+alias bzg='bazel run //:gazelle'
+# The safe way to sync go.mod to MODULE.bazel (avoids the function error!)
+alias bzsync='go mod tidy && bazel mod tidy && bazel run //:gazelle'
+
+# --- Querying (The "Discovery" Tools) ---
+alias bzq='bazel query'
+# Finds what targets depend on a specific file
+alias bzwho='bazel query --output=label_kind "rdeps(//..., attr(srcs, \!.*, //...))"'
+# Finds all direct dependencies of a target
+alias bzdeps='bazel query "deps($1)"'
+
+# --- Formatting ---
+alias bzf='buildifier -r .' # Recursive format of all BUILD/MODULE files
 
 # Chezmoi aliases
 
