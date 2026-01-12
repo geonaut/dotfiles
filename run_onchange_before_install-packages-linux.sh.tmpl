@@ -1,9 +1,32 @@
-#!/bin/bash
-# .chezmoiignore ensures this only runs on Linux
 {{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+set -e
 
-# This list is your "Brewfile" for Ubuntu
-# Add or remove packages here:
+# Define Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RESET='\033[0m'
+
+status() { echo -e "${GREEN}✅ $1${RESET}"; }
+info() { echo -e "${BLUE}ℹ️  $1${RESET}"; }
+
+info "Starting Linux system bootstrap..."
+
+# 1. UBUNTU SPECIFIC REPO FIXES
+{{ if eq .chezmoi.osRelease.id "ubuntu" -}}
+if [ "$(whoami)" = "ubuntu" ]; then
+    info "Live environment detected. Ensuring repository consistency..."
+    CODENAME=$(lsb_release -cs)
+    # Target the new 24.04 DEB822 format
+    SOURCES_FILE="/etc/apt/sources.list.d/ubuntu.sources"
+    if [ -f "$SOURCES_FILE" ]; then
+        sudo sed -i "s/oracular/$CODENAME/g" "$SOURCES_FILE" || true
+    fi
+fi
+{{- end }}
+
+# 2. DEFINE PACKAGE LIST
+# Add or remove packages here to keep your "Brewfile" style list
 PACKAGES=(
     "git"
     "zsh"
@@ -14,11 +37,33 @@ PACKAGES=(
     "jq"
     "fzf"
     "bat"
+    "unzip"
     "build-essential"
 )
 
-echo "📦 Syncing Apt packages..."
-sudo apt-get update
-sudo apt-get install -y ${PACKAGES[@]}
+# 3. ADD DESKTOP DEPENDENCIES (if not a server)
+{{ if not .is_server -}}
+info "Adding desktop-specific libraries to install list..."
+PACKAGES+=(
+    "libgtk-4-dev"
+    "libadwaita-1-dev"
+    "fontconfig"
+)
+{{- end }}
 
+# 4. EXECUTE INSTALLATION
+info "Syncing package manager..."
+sudo apt-get update
+
+info "Installing packages: ${PACKAGES[*]}"
+sudo apt-get install -y "${PACKAGES[@]}"
+
+# 5. SHELL CHANGE
+TARGET_ZSH=$(command -v zsh)
+if [ "$SHELL" != "$TARGET_ZSH" ] && [ -f /etc/passwd ]; then
+    info "Changing default shell to Zsh..."
+    sudo chsh -s "$TARGET_ZSH" "$(whoami)"
+fi
+
+status "System bootstrap complete."
 {{ end -}}
