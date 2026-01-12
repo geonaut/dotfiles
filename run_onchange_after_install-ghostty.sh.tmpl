@@ -1,0 +1,22 @@
+{{ if and (not .is_server) (eq .chezmoi.osRelease.id "ubuntu") -}}
+#!/bin/bash
+# run_onchange_after_install-ghostty.sh.tmpl
+
+set -e
+
+if command -v ghostty >/dev/null 2>&1; then
+    echo "✅ Ghostty is already installed."
+    exit 0
+fi
+
+echo "🚀 Installing Ghostty binary..."
+
+# Use the mkasberg installer which is optimized for Ubuntu 24.04
+# This script:
+# 1. Finds the latest release on GitHub
+# 2. Downloads the .deb package
+# 3. Installs it using 'apt' so dependencies are tracked
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
+
+echo "🎉 Ghostty installation complete!"
+{{ end -}}
