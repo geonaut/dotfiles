@@ -178,3 +178,12 @@ install_starship() {
 }
 
 install_starship
+
+# Only add to .bashrc if it's not already there
+if ! grep -q '.local/bin' ~/.bashrc; then
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+  echo "Added ~/.local/bin to PATH in .bashrc"
+fi
+
+# Apply it to the current session immediately
+export PATH="$HOME/.local/bin:$PATH"
