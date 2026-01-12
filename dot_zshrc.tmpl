@@ -1,3 +1,5 @@
+[[ -f ~/.profile ]] && . ~/.profile
+
 {{ if eq .chezmoi.os "darwin" -}}
 export PATH="/opt/homebrew/bin:$PATH"
 fpath=(/opt/homebrew/share/zsh/site-functions $fpath)

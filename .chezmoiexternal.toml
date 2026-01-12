@@ -48,3 +48,8 @@
 [".oh-my-zsh/custom/completions/_bazel"]
     type = "file"
     url = "https://raw.githubusercontent.com/bazelbuild/bazel/master/scripts/zsh_completion/_bazel"
+
+[".local/bin/buildifier"]
+    type = "file"
+    url = "https://github.com/bazelbuild/buildtools/releases/latest/download/buildifier-linux-amd64"
+    executable = true
