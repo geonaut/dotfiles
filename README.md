@@ -4,7 +4,10 @@ My personal dotfiles, installed via chezmoi.
 
 ## 
 
-`sudo apt update && sudo apt install -y curl && sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply geonaut`
+**Terminal**
+```bash
+sudo apt update && sudo apt install -y curl && sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply geonaut
+```
 
 ## Testing on Ubuntu Server via Docker
 
