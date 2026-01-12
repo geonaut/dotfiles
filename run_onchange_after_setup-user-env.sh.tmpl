@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# run_onchange_after_setup-user-env.sh.tmpl
+# This script handles Oh My Zsh, Plugins, Starship, and Nerd Fonts.
+# It runs AFTER the system dependencies are installed.
+
+set -e
+
+# Define Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RESET='\033[0m'
+
+status() { echo -e "${GREEN}✅ $1${RESET}"; }
+info() { echo -e "${BLUE}ℹ️  $1${RESET}"; }
+
+# 1. OH MY ZSH & PLUGINS
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    info "Installing Oh My Zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
+
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+PLUGINS=(
+    "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+    "https://github.com/zsh-users/zsh-autosuggestions.git"
+    "https://github.com/fdellwing/zsh-bat.git"
+)
+
+info "Cloning/Updating Zsh plugins..."
+for repo in "${PLUGINS[@]}"; do
+    name=$(basename "$repo" .git)
+    if [ ! -d "$ZSH_CUSTOM/plugins/$name" ]; then
+        git clone "$repo" "$ZSH_CUSTOM/plugins/$name"
+    fi
+done
+
+# 2. STARSHIP PROMPT
+if ! command -v starship >/dev/null; then
+    info "Installing Starship prompt..."
+    curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin"
+fi
+
+# 3. DESKTOP SPECIFICS (Fonts and Terminal Config)
+{{ if not .is_server -}}
+FONT_DIR="$HOME/.local/share/fonts/Hack"
+
+if [ ! -d "$FONT_DIR" ]; then
+    info "📦 Installing Hack Nerd Font..."
+    mkdir -p "$FONT_DIR"
+    
+    TEMP_ZIP="/tmp/Hack.zip"
+    curl -fLo "$TEMP_ZIP" "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip"
+    unzip -o "$TEMP_ZIP" -d "$FONT_DIR"
+    rm "$TEMP_ZIP"
+
+    info "Updating font cache..."
+    fc-cache -f "$HOME/.local/share/fonts"
+fi
+
+# 4. AUTOMATIC GNOME TERMINAL CONFIGURATION
+if command -v gsettings >/dev/null 2>&1; then
+    info "🎨 Configuring GNOME Terminal to use Hack Nerd Font..."
+    # Get the default profile ID
+    PROFILE=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d "'")
+    
+    # Set the profile to use the custom Nerd Font we just installed
+    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE/ use-custom-font true
+    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE/ font 'Hack Nerd Font Mono 11'
+fi
+{{- end }}
+
+# 5. FINAL PATH CHECK
+export PATH="$HOME/.local/bin:$PATH"
+
+status "User environment setup complete!"
