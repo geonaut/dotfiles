@@ -2,13 +2,15 @@
 #!/bin/bash
 set -e
 
-# Define Colors
+# --- Helper Functions ---
 GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 RESET='\033[0m'
 
 status() { echo -e "${GREEN}✅ $1${RESET}"; }
 info() { echo -e "${BLUE}ℹ️  $1${RESET}"; }
+warn() { echo -e "${YELLOW}⚠️  $1${RESET}"; }
 
 info "Starting Linux system bootstrap..."
 
@@ -58,11 +60,20 @@ sudo apt-get update
 info "Installing packages: ${PACKAGES[*]}"
 sudo apt-get install -y "${PACKAGES[@]}"
 
-# 5. SHELL CHANGE
+# 5. SHELL CHANGE (Improved with error handling)
 TARGET_ZSH=$(command -v zsh)
-if [ "$SHELL" != "$TARGET_ZSH" ] && [ -f /etc/passwd ]; then
-    info "Changing default shell to Zsh..."
-    sudo chsh -s "$TARGET_ZSH" "$(whoami)"
+USER_NAME=$(whoami)
+
+if [ "$SHELL" != "$TARGET_ZSH" ]; then
+    info "Attempting to change default shell to Zsh for $USER_NAME..."
+    
+    # We check if the user exists in /etc/passwd first
+    if grep -q "^${USER_NAME}:" /etc/passwd; then
+        # Use || true so if chsh fails for any other reason, the script continues
+        sudo chsh -s "$TARGET_ZSH" "$USER_NAME" || warn "chsh failed, skipping..."
+    else
+        warn "User '$USER_NAME' not found in /etc/passwd. Skipping shell change."
+    fi
 fi
 
 status "System bootstrap complete."
