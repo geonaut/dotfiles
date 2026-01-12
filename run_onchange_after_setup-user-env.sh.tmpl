@@ -60,13 +60,12 @@ fi
 
 # 4. AUTOMATIC GNOME TERMINAL CONFIGURATION
 if command -v gsettings >/dev/null 2>&1; then
-    info "🎨 Configuring GNOME Terminal to use Hack Nerd Font..."
-    # Get the default profile ID
+    info "🎨 Attempting to configure GNOME Terminal font..."
     PROFILE=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d "'")
     
-    # Set the profile to use the custom Nerd Font we just installed
-    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE/ use-custom-font true
-    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE/ font 'Hack Nerd Font Mono 11'
+    # We use '|| true' on each because some GNOME versions use different keys
+    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE/ use-custom-font true || true
+    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE/ font 'Hack Nerd Font Mono 11' || true
 fi
 {{- end }}
 
