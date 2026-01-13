@@ -61,16 +61,16 @@ fi
 # 4. AUTOMATIC GNOME TERMINAL CONFIGURATION
 if command -v gsettings >/dev/null 2>&1; then
     info "🎨 Configuring GNOME Terminal font..."
-    PROFILE=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d "'")
-    SCHEMA="org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE/"
+    
+    # Get the UUID of the default profile
+    PROFILE_ID=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d "'")
+    SCHEMA_PATH="org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE_ID/"
 
-    # Check if the key exists before attempting to set it
-    if gsettings list-keys org.gnome.Terminal.Legacy.Profile | grep -q "use-custom-font"; then
-        gsettings set "$SCHEMA" use-custom-font true || true
-    fi
-
-    # Set the font (this key is more universal)
-    gsettings set "$SCHEMA" font 'Hack Nerd Font Mono 11' || true
+    # In 24.04, we set the font directly. Usually, this enables the 'custom' toggle automatically.
+    gsettings set "$SCHEMA_PATH" font 'Hack Nerd Font Mono 11' || true
+    
+    # Try the old key just in case, but silence the error
+    gsettings set "$SCHEMA_PATH" use-custom-font true 2>/dev/null || true
 fi
 {{- end }}
 
