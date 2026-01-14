@@ -1,43 +1,59 @@
 #!/bin/bash
 
-# .chezmoi.os check ensures brew only runs on macOS
+# Brewfile hash: {{ includeTemplate "dot_Brewfile.tmpl" . | sha256sum }}
+# This script re-runs if your Brewfile changes.
+
+# --- 1. Bootstrap PATH ---
+# Ensure Homebrew and language managers are in PATH for this session
+if [[ "$(uname -m)" == "arm64" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+export PATH="$HOME/.pyenv/bin:$HOME/.goenv/bin:$HOME/.cargo/bin:$PATH"
+
+# --- 2. Homebrew Bundle (macOS only) ---
 {{ if eq .chezmoi.os "darwin" -}}
 if command -v brew >/dev/null 2>&1; then
-    brew bundle --global --no-lock
+    echo "🍺 Running Homebrew Bundle..."
+    # Using --global assumes your Brewfile is at ~/.Brewfile
+    # If it's in the repo, use: --file={{ joinPath .chezmoi.sourceDir "dot_Brewfile" | quote }}
+    brew bundle --global
 fi
 {{ end -}}
 
-# Check the opt-in flag from your .chezmoi.toml.tmpl
+# --- 3. Language Setup (Opt-in) ---
 {{ if .install_languages -}}
-echo "🚀 Language opt-in detected: Setting up Rust, Python, and Go..."
+echo "🚀 Opt-in: Installing programming languages..."
 
-# 1. Rustup (Cross-platform)
+# 3a. Rustup
 if ! command -v rustup >/dev/null 2>&1; then
     echo "🦀 Installing Rustup..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y &> /dev/null
 fi
 
-# 2. Pyenv (Cross-platform)
-# Requires system dependencies installed by your 'run_before' script on Ubuntu
+# 3b. Pyenv
 if command -v pyenv >/dev/null 2>&1; then
-    echo "🐍 Initializing pyenv and installing Python 3.12..."
-    eval "$(pyenv init --path)"
+    echo "🐍 Setting up Python via pyenv..."
+    eval "$(pyenv init -)"
     if ! pyenv versions --bare | grep -q "3.12"; then
-         # This will use the build-essential tools installed on Ubuntu
-         # or the Xcode tools on macOS.
+         echo "Installing Python 3.12 (this may take a few minutes)..."
          pyenv install 3.12 &> /dev/null
          pyenv global 3.12
     fi
 fi
 
-# 3. Goenv (Cross-platform)
+# 3c. Goenv
 if command -v goenv >/dev/null 2>&1; then
     echo "🐹 Initializing goenv..."
-    eval "$(goenv init --path)"
+    eval "$(goenv init -)"
+    # Optional: pyenv-style install logic can go here
 fi
 
+echo "✅ Language managers initialized."
+
 {{ else -}}
-echo "⏭️ Skipping programming languages (opt-in flag is false)."
+echo "⏭️ Skipping language installation as per config."
 {{- end }}
 
-echo "✅ Package installation and language setup complete."
+echo "✅ Package installation and setup complete."
