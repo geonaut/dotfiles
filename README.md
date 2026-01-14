@@ -2,9 +2,12 @@
 
 My personal dotfiles, installed via chezmoi.
 
-## 
+## One-liners
 
-**Terminal**
+```bash
+mkdir -p "$HOME/.local/bin" && sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply geonaut
+```
+
 ```bash
 sudo apt update && sudo apt install -y curl && sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply geonaut
 ```
