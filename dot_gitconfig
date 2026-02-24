@@ -8,3 +8,5 @@
 	st = status
 [core]
 	pager = less -F -X
+[include]
+    path = ~/.gitconfig-local
