@@ -18,6 +18,23 @@ if [ -f "$ZSH/oh-my-zsh.sh" ]; then
     source "$ZSH/oh-my-zsh.sh"
 fi
 
+if [ -f "$HOME/.zshrc_local" ]; then
+  source "$HOME/.zshrc_local"
+fi
+
+# Auto-source .zshrc when it changes
+zshrc_mtime=$(stat -f %m ~/.zshrc)
+check_zshrc_update() {
+  local current_mtime=$(stat -f %m ~/.zshrc)
+  if [[ "$current_mtime" != "$zshrc_mtime" ]]; then
+    zshrc_mtime=$current_mtime
+    source ~/.zshrc
+    echo "♻️  .zshrc changes detected and applied."
+  fi
+}
+# Run this check before every prompt
+add-zsh-hook precmd check_zshrc_update
+
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
@@ -43,7 +60,7 @@ zstyle ':omz:update' mode auto      # update automatically without asking
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
+ENABLE_CORRECTION="false"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
