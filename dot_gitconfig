@@ -10,3 +10,5 @@
 	pager = less -F -X
 [include]
     path = ~/.gitconfig-local
+[includeIf "gitdir:~/.local/share/chezmoi/"]
+    path = ~/.gitconfig-personal
