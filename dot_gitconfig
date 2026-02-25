@@ -12,3 +12,9 @@
     path = ~/.gitconfig-local
 [includeIf "gitdir:~/.local/share/chezmoi/"]
     path = ~/.gitconfig-personal
+[pull]
+    rebase = true
+[rebase]
+    autoStash = true
+[core]
+    autosquash = true
