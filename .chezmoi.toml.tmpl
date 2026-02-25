@@ -6,6 +6,7 @@
     # You could even add a 'workstation' flag for more granularity
     is_server = {{ promptBoolOnce . "is_server" "Is this a headless server?" false }}
     low_fidelity = {{ promptBoolOnce . "low_fidelity" "Use robust/low-fidelity UI (skip powerline glyphs)?" false }}
+    using_bazel = {{ promptBoolOnce . "using_bazel" "Will you be using Bazel?" false }}
 
 {{ if eq .chezmoi.os "darwin" -}}
     scriptTempDir = "~/.config/chezmoi/tmp"
