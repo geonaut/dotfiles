@@ -137,10 +137,13 @@ alias bz_rust_fix='bazel clean && bazel build //... && bz_sync_rust'
 # Chezmoi aliases
 
 alias cm='chezmoi'
+alias cma='cm_apply'
 alias cm_apply='chezmoi apply && source ~/.zshrc'
 alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
 alias cm_bootstrap_mac='~/.local/share/chezmoi/bootstrap/macos/bootstrap.sh'
 alias cm_bootstrap_linux='~/.local/share/chezmoi/bootstrap/ubuntu/bootstrap.sh'
+alias cm_rerun_questions='rm ~/.config/chezmoi/chezmoi.toml && chezmoi init && chezmoi apply'
+alias cm_edit='cd ~/.local/share/chezmoi'
 
 # Ubuntu specific fixes
 {{ if eq .chezmoi.os "linux" -}}
@@ -160,6 +163,10 @@ if command -v eza &> /dev/null; then
     alias lS='eza -lhrS --header'
     alias tree='eza -T -I "node_modules|__pycache__|.git|target"'
 fi
+
+### GIT (also see .gitconfig)
+
+alias git_whoami='git config user.email && git config user.name'
 
 ### TMUX
 
