@@ -7,17 +7,25 @@ brew "jq"
 brew "tmux"
 brew "htop"
 brew "wget"
-brew "kubernetes-cli"
-brew "podman"
+# brew "podman"
 brew "docker"
 brew "eza"
 brew "fzf"
 brew "bat"
 brew "starship"
+brew "awscli"
 
 {{ if .using_bazel -}}
 brew "ibazel"
 brew "bazelisk"
+{{- end }}
+
+{{ if .using_k8s -}}
+brew "kubernetes-cli"
+brew "kubectx"
+brew "stern"
+brew "eksctl"
+brew "helm"
 {{- end }}
 
 {{ if .install_languages -}}
