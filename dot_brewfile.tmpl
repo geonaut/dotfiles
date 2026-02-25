@@ -15,6 +15,11 @@ brew "fzf"
 brew "bat"
 brew "starship"
 
+{{ if .using_bazel -}}
+brew "ibazel"
+brew "bazelisk"
+{{- end }}
+
 {{ if .install_languages -}}
 brew "pyenv"
 brew "rustup-init"
@@ -25,4 +30,5 @@ brew "goenv"
 cask "visual-studio-code"
 cask "ghostty"
 cask "font-hack-nerd-font"
+cask "gcloud-cli"
 {{ end -}}
