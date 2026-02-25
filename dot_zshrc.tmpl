@@ -18,6 +18,7 @@ if [ -f "$ZSH/oh-my-zsh.sh" ]; then
     source "$ZSH/oh-my-zsh.sh"
 fi
 
+# Load local overrides (like git_clean_branches)
 if [ -f "$HOME/.zshrc_local" ]; then
   source "$HOME/.zshrc_local"
 fi
@@ -35,60 +36,10 @@ check_zshrc_update() {
 # Run this check before every prompt
 add-zsh-hook precmd check_zshrc_update
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
+# --- OMZ Settings ---
 zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
 ENABLE_CORRECTION="false"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
 export LANG=en_GB.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-# source ~/powerlevel10k/powerlevel10k.zsh-theme
-
-# # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 HISTSIZE=10000
 SAVEHIST=10000
@@ -116,16 +67,31 @@ alias bztidy='bazel mod tidy'
 alias bzgraph='bazel mod graph'
 alias bzshow='bazel mod show_repo'
 
-# --- Gazelle (The Generator) ---
+# --- Gazelle ---
 alias bzg='bazel run //:gazelle --experimental_isolated_extension_usages'
 alias bz_sync_go='go mod tidy && bazel mod tidy && bazel run //:gazelle'
-
 alias bz_sync_rust='CARGO_BAZEL_REPIN=1 bazel run //:gazelle --experimental_isolated_extension_usages'
 
-# --- Querying ---
+# --- Querying & Smart Testing ---
 alias bzq='bazel query'
 alias bzwho='bazel query --output=label_kind "rdeps(//..., attr(srcs, \!.*, //...))"'
 alias bzdeps='bazel query "deps($1)"'
+
+# Test only targets affected by changes vs main
+bz_test_changed() {
+    local changed_files=$(git diff --name-only main | xargs echo)
+    if [[ -z "$changed_files" ]]; then
+        echo "✅ No changes detected vs main."
+        return 0
+    fi
+    echo "🔍 Finding affected tests..."
+    local affected_tests=$(bazel query "rdeps(//..., set($changed_files)) intersect tests(//...)" 2>/dev/null)
+    if [[ -z "$affected_tests" ]]; then
+        echo "✨ No affected tests found."
+    else
+        bazel test $affected_tests
+    fi
+}
 
 # --- Formatting ---
 alias bzf='buildifier -r .'
@@ -134,19 +100,18 @@ alias bzf='buildifier -r .'
 # Helpful for when Rust Analyzer loses track of the crate universe
 alias bz_rust_fix='bazel clean && bazel build //... && bz_sync_rust'
 
-# Chezmoi aliases
-
+# --- Chezmoi ---
 alias cm='chezmoi'
 alias cma='cm_apply'
-alias cm_apply='chezmoi apply && exec zsh'
-alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && exec zsh'
+alias cm_apply='chezmoi apply && source ~/.zshrc'
+alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
 alias cm_bootstrap_mac='~/.local/share/chezmoi/bootstrap/macos/bootstrap.sh'
 alias cm_bootstrap_linux='~/.local/share/chezmoi/bootstrap/ubuntu/bootstrap.sh'
 alias cm_rerun_questions='rm ~/.config/chezmoi/chezmoi.toml && chezmoi init && chezmoi apply'
 alias cm_ask_new_questions='chezmoi init && chezmoi apply'
 alias cm_edit='cd ~/.local/share/chezmoi'
 
-# Ubuntu specific fixes
+# --- OS Specifics ---
 {{ if eq .chezmoi.os "linux" -}}
 # Ubuntu calls 'bat' 'batcat' when installed via apt
 if command -v batcat &> /dev/null; then
@@ -154,19 +119,17 @@ if command -v batcat &> /dev/null; then
 fi
 {{ end -}}
 
-# EZA Aliases (Universal - Works on Mac and Linux now)
+# --- Modern CLI Tools ---
 if command -v eza &> /dev/null; then
     alias ls='eza'
     alias l='eza -l --git --header'
     alias ll='eza -la --git --header'
     alias la='eza -la --git'
     alias lt='eza -latr --header'
-    alias lS='eza -lhrS --header'
     alias tree='eza -T -I "node_modules|__pycache__|.git|target"'
 fi
 
-### GIT (also see .gitconfig)
-
+# --- Git Extras ---
 alias git_whoami='git config user.email && git config user.name'
 alias git_rebase='git fetch origin main:main && git rebase main --autostash'
 
@@ -217,14 +180,8 @@ exit_tmux() {
 }
 
 context() {
-    # Define colors
-    local bold="\033[1m"
-    local green="\033[32m"
-    local blue="\033[34m"
-    local cyan="\033[36m"
-    local yellow="\033[33m"
-    local dim="\033[2m"
-    local reset="\033[0m"
+    local bold="\033[1m"; local green="\033[32m"; local blue="\033[34m"
+    local cyan="\033[36m"; local yellow="\033[33m"; local reset="\033[0m"
 
     echo -e "${bold}System & Cloud Contexts${reset}"
     echo -e "--------------------------------------------------------------------------------"
@@ -278,20 +235,14 @@ context() {
     # 7. Brew Packages (Single line list)
     if command -v brew &> /dev/null; then
         echo -e "\n${bold}Brew Packages (On-Request):${reset}"
-        local b_list=$(brew list --installed-on-request | paste -sd ", " -)
-        echo -e "${dim}${b_list}${reset}" | fold -s -w $(tput cols)
+        # Fetch packages, swap newlines for commas, and wrap cleanly
+        brew list --installed-on-request | sort | xargs echo | sed 's/ /, /g' | fmt -w $(tput cols) | sed 's/^/  /'
     fi
 
     echo -e "--------------------------------------------------------------------------------"
 }
 
-# MAC-ONLY ALIASES
-
-# Navigation
-alias go_coding="cd ~/Coding"
-
-# --- STARSHIP INIT ---
-# This MUST be at the very end of the file
+# --- Starship Init ---
 if command -v starship &> /dev/null; then
     eval "$(starship init zsh)"
 fi
