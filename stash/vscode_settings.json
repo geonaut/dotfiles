@@ -1,0 +1,40 @@
+{
+    "editor.formatOnSave": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    "editor.inlineSuggest.enabled": true,
+    "files.autoSave": "afterDelay",
+    "git.enableSmartCommit": true,
+
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "go.toolsManagement.autoUpdate": true,
+
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "python.analysis.typeCheckingMode": "basic",
+
+    "[terraform]": {
+        "editor.defaultFormatter": "hashicorp.terraform"
+    },
+    "terraform.languageServer.enable": true,
+
+    "files.associations": {
+        "*.tmpl": "shellscript",
+        "dot_*": "shellscript",
+        "*.toml.tmpl": "toml"
+    },
+    
+    "emmet.includeLanguages": {
+        "gotmpl": "html"
+    },
+    "editor.minimap.enabled": false
+}
