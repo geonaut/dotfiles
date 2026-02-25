@@ -2,6 +2,8 @@
 export LANG=en_US.UTF-8
 export LC_COLLATE=C
 
+typeset -U path PATH fpath FPATH
+
 # --- goenv ---
 if command -v goenv &> /dev/null; then
   export GOENV_ROOT="$HOME/.goenv"
