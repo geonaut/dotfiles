@@ -138,8 +138,8 @@ alias bz_rust_fix='bazel clean && bazel build //... && bz_sync_rust'
 
 alias cm='chezmoi'
 alias cma='cm_apply'
-alias cm_apply='chezmoi apply && source ~/.zshrc'
-alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
+alias cm_apply='chezmoi apply && exec zsh'
+alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && exec zsh'
 alias cm_bootstrap_mac='~/.local/share/chezmoi/bootstrap/macos/bootstrap.sh'
 alias cm_bootstrap_linux='~/.local/share/chezmoi/bootstrap/ubuntu/bootstrap.sh'
 alias cm_rerun_questions='rm ~/.config/chezmoi/chezmoi.toml && chezmoi init && chezmoi apply'
@@ -213,6 +213,75 @@ exit_tmux() {
     # 3. Exit the current shell process.
     # This closes the Ghostty window/tab if it was the last shell running.
     exit
+}
+
+context() {
+    # Define colors
+    local bold="\033[1m"
+    local green="\033[32m"
+    local blue="\033[34m"
+    local cyan="\033[36m"
+    local yellow="\033[33m"
+    local dim="\033[2m"
+    local reset="\033[0m"
+
+    echo -e "${bold}System & Cloud Contexts${reset}"
+    echo -e "--------------------------------------------------------------------------------"
+
+    (
+        # Header for the table
+        echo -e "${bold}SERVICE\tACTIVE_CONTEXT/INFO${reset}"
+
+        # 1. Kubernetes Context
+        if command -v kubectl &> /dev/null; then
+            local k_ctx=$(kubectl config current-context 2>/dev/null || echo "None")
+            echo -e "Kubernetes\t${blue}${k_ctx}${reset}"
+        fi
+
+        # 2. AWS Profile
+        if [[ -n "$AWS_PROFILE" ]]; then
+            echo -e "AWS Profile\t${yellow}${AWS_PROFILE}${reset}"
+        elif [[ -f ~/.aws/config ]]; then
+            local a_ctx=$(grep "\[profile" ~/.aws/config | head -1 | awk '{print $2}' | tr -d ']')
+            echo -e "AWS (Config)\t${a_ctx:-default}"
+        fi
+
+        # 3. GCloud Account
+        if command -v gcloud &> /dev/null; then
+            local g_ctx=$(gcloud config get-value account 2>/dev/null)
+            echo -e "GCloud\t${cyan}${g_ctx:-None}${reset}"
+        fi
+
+        # 4. Git Identity
+        local g_email=$(git config user.email 2>/dev/null)
+        echo -e "Git Email\t${g_email:-Not Set}"
+
+        # 5. Language Versions
+        if command -v pyenv &> /dev/null; then
+            local p_ver=$(pyenv version-name 2>/dev/null)
+            echo -e "Python\t${green}pyenv: ${p_ver}${reset}"
+        fi
+
+        if command -v goenv &> /dev/null; then
+            local g_ver=$(goenv version-name 2>/dev/null)
+            echo -e "Go\t${cyan}goenv: ${g_ver}${reset}"
+        fi
+
+    ) | column -t -s $'\t'
+
+    # 6. Prettified PATH
+    echo -e "\n${bold}Active PATH:${reset}"
+    # Splitting PATH by colon and printing with index
+    echo $PATH | tr ':' '\n' | awk '{print "  "NR". " $0}' | sed "s|$HOME|~|g"
+
+    # 7. Brew Packages (Single line list)
+    if command -v brew &> /dev/null; then
+        echo -e "\n${bold}Brew Packages (On-Request):${reset}"
+        local b_list=$(brew list --installed-on-request | paste -sd ", " -)
+        echo -e "${dim}${b_list}${reset}" | fold -s -w $(tput cols)
+    fi
+
+    echo -e "--------------------------------------------------------------------------------"
 }
 
 # MAC-ONLY ALIASES
