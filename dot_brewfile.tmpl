@@ -15,7 +15,16 @@ brew "bat"
 brew "starship"
 brew "awscli"
 brew "shellcheck"
-brew "tailscale"
+brew "yazi"
+brew "fd"
+brew "ripgrep"
+brew "zoxide"
+brew "sevenzip"
+
+{{ if .using_tf -}}
+tap "hashicorp/tap"
+brew "hashicorp/tap/terraform"
+{{- end }}
 
 {{ if .using_bazel -}}
 brew "ibazel"
@@ -42,3 +51,9 @@ cask "ghostty"
 cask "font-hack-nerd-font"
 cask "gcloud-cli"
 {{ end -}}
+
+brew "yazi"
+brew "fd"
+brew "ripgrep"
+brew "zoxide"
+brew "sevenzip"
