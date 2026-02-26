@@ -1,2 +1,6 @@
 *.sublime-project
 *.sublime-workspace
+.zshrc_local
+.zprofile_local
+.gitconfig_local
+*_local.*
