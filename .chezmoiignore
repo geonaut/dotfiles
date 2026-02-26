@@ -2,7 +2,7 @@ README.md
 toolchains/
 .gitconfig-local
 *.sublime-project
-*.sublime-worksapce
+*.sublime-workspace
 
 {{ if ne .chezmoi.os "darwin" -}}
 .chezmoibrew.sh
