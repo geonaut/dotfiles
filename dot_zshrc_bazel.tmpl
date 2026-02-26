@@ -1,0 +1,46 @@
+# --- Bazel (Core) ---
+alias bz='bazel'
+alias bazel="bazelisk"
+alias bzb='bazel build'
+alias bzt='bazel test'
+alias bzr='bazel run'
+alias bzc='bazel clean'
+alias bzce='bazel clean --expunge'
+
+# --- Bzlmod & Dependency Management ---
+alias bztidy='bazel mod tidy'
+alias bzgraph='bazel mod graph'
+alias bzshow='bazel mod show_repo'
+
+# --- Gazelle ---
+alias bzg='bazel run //:gazelle --experimental_isolated_extension_usages'
+alias bz_sync_go='go mod tidy && bazel mod tidy && bazel run //:gazelle'
+alias bz_sync_rust='CARGO_BAZEL_REPIN=1 bazel run //:gazelle --experimental_isolated_extension_usages'
+
+# --- Querying & Smart Testing ---
+alias bzq='bazel query'
+alias bzwho='bazel query --output=label_kind "rdeps(//..., attr(srcs, \!.*, //...))"'
+alias bzdeps='bazel query "deps($1)"'
+
+# Test only targets affected by changes vs main
+bz_test_changed() {
+    local changed_files=$(git diff --name-only main | xargs echo)
+    if [[ -z "$changed_files" ]]; then
+        echo "✅ No changes detected vs main."
+        return 0
+    fi
+    echo "🔍 Finding affected tests..."
+    local affected_tests=$(bazel query "rdeps(//..., set($changed_files)) intersect tests(//...)" 2>/dev/null)
+    if [[ -z "$affected_tests" ]]; then
+        echo "✨ No affected tests found."
+    else
+        bazel test $affected_tests
+    fi
+}
+
+# --- Formatting ---
+alias bzf='buildifier -r .'
+
+# --- IDE Support ---
+# Helpful for when Rust Analyzer loses track of the crate universe
+alias bz_rust_fix='bazel clean && bazel build //... && bz_sync_rust'
