@@ -9,9 +9,9 @@
 [core]
 	pager = less -F -X
 [include]
-    path = ~/.gitconfig-local
+    path = ~/.gitconfig_local
 [includeIf "gitdir:~/.local/share/chezmoi/"]
-    path = ~/.gitconfig-personal
+    path = ~/.gitconfig_personal
 [pull]
     rebase = true
 [rebase]
