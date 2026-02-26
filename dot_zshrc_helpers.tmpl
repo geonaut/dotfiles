@@ -1,0 +1,74 @@
+# Misc Helper Files
+
+### TMUX
+
+go_tmux() {
+    local SESSION_NAME="main"
+
+    if ! command -v tmux &> /dev/null; then
+        echo "🛑 Error: tmux command not found. Please ensure it is installed."
+        return 1
+    fi
+
+    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        echo "🗑️ Found and killing old tmux session '$SESSION_NAME' to create a fresh one..."
+        tmux kill-session -t "$SESSION_NAME"
+    fi
+
+    echo "🚀 Starting new, fresh tmux session '$SESSION_NAME' with three-pane layout..."
+    tmux new-session -d -s "$SESSION_NAME" -n "dev"
+    tmux split-window -v -t "$SESSION_NAME"
+    tmux select-pane -U
+    tmux split-window -h
+    tmux select-pane -D
+    tmux attach-session -t "$SESSION_NAME"
+}
+
+exit_tmux() {
+    local CURRENT_SESSION_NAME="$(tmux display-message -p '#S')"
+
+    if [ -n "$TMUX" ] && [ -n "$CURRENT_SESSION_NAME" ]; then
+        echo "🔪 Killing tmux session: $CURRENT_SESSION_NAME"
+
+        tmux kill-session -t "$CURRENT_SESSION_NAME"
+    else
+        echo "⚠️ Not currently inside a named tmux session."
+    fi
+
+    exit
+}
+
+
+### GIT
+git_clean_branches() {
+    echo "🔄 Syncing with origin..."
+    git fetch origin --prune
+
+    local current_branch=$(git branch --show-current)
+    local merged_branches=$(git branch --merged main | grep -v -E "^(\*|  main|  $current_branch)")
+
+    if [[ -z "$merged_branches" ]]; then
+        echo "✨ No merged branches to clean up."
+        return 0
+    fi
+
+    echo "Found the following merged branches:"
+    echo "$merged_branches"
+    echo "--------------------------------"
+
+    for branch in $(echo "$merged_branches"); do
+        branch=$(echo "$branch" | tr -d '[:space:]')
+
+        echo -n "🗑️  Delete branch '$branch'? (y/N): "
+        read -k 1 response
+        echo ""
+
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            git branch -d "$branch"
+        else
+            echo "⏭️  Skipping '$branch'..."
+        fi
+    done
+
+    echo "✅ Cleanup complete."
+}

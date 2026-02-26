@@ -23,6 +23,17 @@ if [ -f "$HOME/.zshrc_local" ]; then
   source "$HOME/.zshrc_local"
 fi
 
+# Load local overrides (like git_clean_branches)
+if [ -f "$HOME/.zshrc_helpers" ]; then
+  source "$HOME/.zshrc_helpers"
+fi
+
+# Load local overrides (like git_clean_branches)
+if [ -f "$HOME/.zshrc_bazel" ]; then
+  source "$HOME/.zshrc_bazel"
+fi
+
+
 # Auto-source .zshrc when it changes
 zshrc_mtime=$(stat -f %m ~/.zshrc)
 check_zshrc_update() {
@@ -52,53 +63,6 @@ bindkey '^[[A' up-line-or-search
 bindkey '^[[B' down-line-or-search
 
 #-- ALIASES --#
-
-# --- Bazel (Core) ---
-alias bz='bazel'
-alias bazel="bazelisk"
-alias bzb='bazel build'
-alias bzt='bazel test'
-alias bzr='bazel run'
-alias bzc='bazel clean'
-alias bzce='bazel clean --expunge'
-
-# --- Bzlmod & Dependency Management ---
-alias bztidy='bazel mod tidy'
-alias bzgraph='bazel mod graph'
-alias bzshow='bazel mod show_repo'
-
-# --- Gazelle ---
-alias bzg='bazel run //:gazelle --experimental_isolated_extension_usages'
-alias bz_sync_go='go mod tidy && bazel mod tidy && bazel run //:gazelle'
-alias bz_sync_rust='CARGO_BAZEL_REPIN=1 bazel run //:gazelle --experimental_isolated_extension_usages'
-
-# --- Querying & Smart Testing ---
-alias bzq='bazel query'
-alias bzwho='bazel query --output=label_kind "rdeps(//..., attr(srcs, \!.*, //...))"'
-alias bzdeps='bazel query "deps($1)"'
-
-# Test only targets affected by changes vs main
-bz_test_changed() {
-    local changed_files=$(git diff --name-only main | xargs echo)
-    if [[ -z "$changed_files" ]]; then
-        echo "✅ No changes detected vs main."
-        return 0
-    fi
-    echo "🔍 Finding affected tests..."
-    local affected_tests=$(bazel query "rdeps(//..., set($changed_files)) intersect tests(//...)" 2>/dev/null)
-    if [[ -z "$affected_tests" ]]; then
-        echo "✨ No affected tests found."
-    else
-        bazel test $affected_tests
-    fi
-}
-
-# --- Formatting ---
-alias bzf='buildifier -r .'
-
-# --- IDE Support ---
-# Helpful for when Rust Analyzer loses track of the crate universe
-alias bz_rust_fix='bazel clean && bazel build //... && bz_sync_rust'
 
 # --- Chezmoi ---
 alias cm='chezmoi'
@@ -133,114 +97,7 @@ fi
 alias git_whoami='git config user.email && git config user.name'
 alias git_rebase='git fetch origin main:main && git rebase main --autostash'
 
-### TMUX
 
-go_tmux() {
-    local SESSION_NAME="main"
-
-    if ! command -v tmux &> /dev/null; then
-        echo "🛑 Error: tmux command not found. Please ensure it is installed."
-        return 1
-    fi
-
-    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-        echo "🗑️ Found and killing old tmux session '$SESSION_NAME' to create a fresh one..."
-        tmux kill-session -t "$SESSION_NAME"
-    fi
-
-    echo "🚀 Starting new, fresh tmux session '$SESSION_NAME' with three-pane layout..."
-    tmux new-session -d -s "$SESSION_NAME" -n "dev"
-    tmux split-window -v -t "$SESSION_NAME"
-    tmux select-pane -U
-    tmux split-window -h
-    tmux select-pane -D
-    tmux attach-session -t "$SESSION_NAME"
-}
-
-exit_tmux() {
-    # 1. Get the name of the current session
-    # We use a built-in tmux variable to get the session name safely.
-    local CURRENT_SESSION_NAME="$(tmux display-message -p '#S')"
-
-    # 2. Check if we are inside a tmux session and if the name is available
-    if [ -n "$TMUX" ] && [ -n "$CURRENT_SESSION_NAME" ]; then
-        echo "🔪 Killing tmux session: $CURRENT_SESSION_NAME"
-
-        # Kill the entire session. This detaches all clients (including your Ghostty window).
-        # We wrap this in a sub-shell to ensure the local variables are handled correctly
-        # and to prevent errors from crashing the current shell.
-        tmux kill-session -t "$CURRENT_SESSION_NAME"
-    else
-        echo "⚠️ Not currently inside a named tmux session."
-    fi
-
-    # 3. Exit the current shell process.
-    # This closes the Ghostty window/tab if it was the last shell running.
-    exit
-}
-
-context() {
-    local bold="\033[1m"; local green="\033[32m"; local blue="\033[34m"
-    local cyan="\033[36m"; local yellow="\033[33m"; local reset="\033[0m"
-
-    echo -e "${bold}System & Cloud Contexts${reset}"
-    echo -e "--------------------------------------------------------------------------------"
-
-    (
-        # Header for the table
-        echo -e "${bold}SERVICE\tACTIVE_CONTEXT/INFO${reset}"
-
-        # 1. Kubernetes Context
-        if command -v kubectl &> /dev/null; then
-            local k_ctx=$(kubectl config current-context 2>/dev/null || echo "None")
-            echo -e "Kubernetes\t${blue}${k_ctx}${reset}"
-        fi
-
-        # 2. AWS Profile
-        if [[ -n "$AWS_PROFILE" ]]; then
-            echo -e "AWS Profile\t${yellow}${AWS_PROFILE}${reset}"
-        elif [[ -f ~/.aws/config ]]; then
-            local a_ctx=$(grep "\[profile" ~/.aws/config | head -1 | awk '{print $2}' | tr -d ']')
-            echo -e "AWS (Config)\t${a_ctx:-default}"
-        fi
-
-        # 3. GCloud Account
-        if command -v gcloud &> /dev/null; then
-            local g_ctx=$(gcloud config get-value account 2>/dev/null)
-            echo -e "GCloud\t${cyan}${g_ctx:-None}${reset}"
-        fi
-
-        # 4. Git Identity
-        local g_email=$(git config user.email 2>/dev/null)
-        echo -e "Git Email\t${g_email:-Not Set}"
-
-        # 5. Language Versions
-        if command -v pyenv &> /dev/null; then
-            local p_ver=$(pyenv version-name 2>/dev/null)
-            echo -e "Python\t${green}pyenv: ${p_ver}${reset}"
-        fi
-
-        if command -v goenv &> /dev/null; then
-            local g_ver=$(goenv version-name 2>/dev/null)
-            echo -e "Go\t${cyan}goenv: ${g_ver}${reset}"
-        fi
-
-    ) | column -t -s $'\t'
-
-    # 6. Prettified PATH
-    echo -e "\n${bold}Active PATH:${reset}"
-    # Splitting PATH by colon and printing with index
-    echo $PATH | tr ':' '\n' | awk '{print "  "NR". " $0}' | sed "s|$HOME|~|g"
-
-    # 7. Brew Packages (Single line list)
-    if command -v brew &> /dev/null; then
-        echo -e "\n${bold}Brew Packages (On-Request):${reset}"
-        # Fetch packages, swap newlines for commas, and wrap cleanly
-        brew list --installed-on-request | sort | xargs echo | sed 's/ /, /g' | fmt -w $(tput cols) | sed 's/^/  /'
-    fi
-
-    echo -e "--------------------------------------------------------------------------------"
-}
 
 # --- Starship Init ---
 if command -v starship &> /dev/null; then
