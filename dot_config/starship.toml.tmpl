@@ -17,6 +17,7 @@ $git_status\
 $line_break$character"""
 
 right_format = """
+${custom.worktree}\
 $time\
 [](color_bg1)
 """
@@ -97,3 +98,19 @@ error_symbol = '[](bold fg:color_red)'
 
 [line_break]
 disabled = true
+
+[custom.worktree]
+description = "Show truncated worktree name with icon"
+# Logic: Get name, check length. If > 8, take first 8 and add '...'. Else, print name.
+command = '''
+name=$(basename $(git rev-parse --show-toplevel 2>/dev/null))
+if [ ${#name} -gt 8 ]; then
+    echo "${name:0:8}.."
+else
+    echo "$name"
+fi
+'''
+when = 'git rev-parse --git-dir 2>/dev/null | grep -q "worktrees"'
+style = "bold purple"
+format = "[󰊢  󰐆 $output]($style)"
+shell = ["bash", "--noprofile", "--norc"]
