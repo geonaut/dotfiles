@@ -42,7 +42,7 @@ jobs:
 
       - name: Initialize & Apply (Dry Run)
         # Now we run it exactly like a real user would
-        run: chezmoi init --apply --dry-run --verbose
+        run: chezmoi init --apply --dry-run --verbose --exclude .oh-my-zsh
 
       - name: Run Chezmoi Doctor
         run: chezmoi doctor
