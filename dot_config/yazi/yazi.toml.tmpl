@@ -1,2 +1,13 @@
 [mgr]
 show_hidden = true
+
+[opener]
+edit = [
+    { run = 'nvim "$@"', block = true, for = "unix" }
+]
+
+[open]
+rules = [
+    { name = "*.{go,lua,sh,md,yaml,toml,sql,txt}", use = "edit" },
+    { mime = "text/*", use = "edit" },
+]
