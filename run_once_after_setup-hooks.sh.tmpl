@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# 1. Get the absolute path to your chezmoi source
+# This variable is built into chezmoi templates
+SOURCE_DIR="{{ .chezmoi.sourceDir }}"
+
+echo "Attempting to install hooks in: $SOURCE_DIR"
+
+if [ -d "$SOURCE_DIR/.git" ]; then
+    if command -v pre-commit >/dev/null 2>&1; then
+        cd "$SOURCE_DIR"
+        # We use --install-hooks to ensure the environments are ready
+        pre-commit install --hook-type pre-push
+        echo "✅ Pre-push hooks installed successfully."
+    else
+        echo "❌ Error: pre-commit is not installed. Run 'brew install pre-commit'."
+        exit 1
+    fi
+else
+    echo "❌ Error: $SOURCE_DIR is not a git repository. Git hooks cannot be installed."
+    echo "If you are working out of a different folder (like 'yak'), make sure chezmoi knows that is the source."
+    exit 1
+fi
