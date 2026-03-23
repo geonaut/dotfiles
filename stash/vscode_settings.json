@@ -32,7 +32,7 @@
         "dot_*": "shellscript",
         "*.toml.tmpl": "toml"
     },
-    
+
     "emmet.includeLanguages": {
         "gotmpl": "html"
     },

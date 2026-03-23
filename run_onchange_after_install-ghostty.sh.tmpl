@@ -10,7 +10,7 @@ warn() { echo -e "${YELLOW}⚠️  $1${RESET}"; }
 
 echo "🚀 Attempting to install Ghostty binary..."
 
-# We use a subshell ( ) to capture the installer's exit status 
+# We use a subshell ( ) to capture the installer's exit status
 # without letting it kill our main script.
 if bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/main/install.sh)"; then
     echo "✅ Ghostty installed successfully."
