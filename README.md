@@ -1,3 +1,5 @@
+![Verify Dotfiles](https://github.com/<YOUR_GITHUB_USERNAME>/<YOUR_REPO_NAME>/actions/workflows/verify.yml/badge.svg)
+
 # Geonaut's dotfiles
 
 My personal dotfiles, installed via chezmoi.
