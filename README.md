@@ -1,4 +1,4 @@
-![Verify Dotfiles](https://github.com/geonaut/dotfiles/actions/workflows/verify.yml/badge.svg)
+![Verify Dotfiles](https://github.com/geonaut/dotfiles/actions/workflows/cm_verify.yml/badge.svg)
 
 # Geonaut's dotfiles
 
