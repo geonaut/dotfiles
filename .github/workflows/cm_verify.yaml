@@ -8,21 +8,21 @@ on:
 jobs:
   test-apply:
     strategy:
+      fail-fast: false
       matrix:
-        # This spins up two parallel jobs
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install Chezmoi
-        # Using the binary script is faster than 'brew install' or 'apt-get'
         run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
 
-      - name: Create Mock Config
+      - name: Mock Environment
         run: |
+          # 1. Pre-fill answers to skip interactive prompts
           mkdir -p ~/.config/chezmoi
           cat <<EOF > ~/.config/chezmoi/chezmoi.toml
           [data]
@@ -35,11 +35,13 @@ jobs:
             using_tf = true
           EOF
 
+          # 2. Symlink source so chezmoi (and doctor) finds it automatically
+          mkdir -p ~/.local/share
+          ln -sf "$GITHUB_WORKSPACE" ~/.local/share/chezmoi
+
       - name: Initialize & Apply (Dry Run)
-        # --dry-run ensures we don't actually modify the GHA runner's system
-        # --verbose shows exactly what would have happened in the logs
-        run: chezmoi init --apply --dry-run --verbose --source=$GITHUB_WORKSPACE
+        # Now we run it exactly like a real user would
+        run: chezmoi init --apply --dry-run --verbose
 
       - name: Run Chezmoi Doctor
-        # Useful for debugging environment mismatches in the logs
         run: chezmoi doctor
