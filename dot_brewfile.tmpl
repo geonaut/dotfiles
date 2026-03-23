@@ -22,6 +22,9 @@ brew "zoxide"
 brew "sevenzip"
 brew "libpq"
 brew "watch"
+brew "pnpm"
+brew "node"
+brew "neovim"
 
 {{ if .using_tf -}}
 tap "hashicorp/tap"
@@ -39,6 +42,8 @@ brew "kubectx"
 brew "stern"
 brew "eksctl"
 brew "helm"
+brew "helmfile"
+brew "kind"
 tap "derailed/k9s"
 brew "derailed/k9s/k9s"
 {{- end }}
