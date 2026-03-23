@@ -15,7 +15,7 @@ warn() { echo -e "${YELLOW}⚠️  $1${RESET}"; }
 info "Starting Linux system bootstrap..."
 
 # 1. UBUNTU SPECIFIC REPO FIXES
-{{ if eq .chezmoi.osRelease.id "ubuntu" -}}
+{{ if (and (eq .chezmoi.os "linux") (hasKey .chezmoi "osRelease") (eq .chezmoi.osRelease.id "ubuntu")) -}}
 if [ "$(whoami)" = "ubuntu" ]; then
     info "Live environment detected. Ensuring repository consistency..."
     CODENAME=$(lsb_release -cs)

@@ -12,5 +12,5 @@
 
 
 {{ if eq .chezmoi.os "darwin" -}}
-    scriptTempDir = "~/.config/chezmoi/tmp"
+    scriptTempDir = "{{ .chezmoi.homeDir }}/.config/chezmoi/tmp"
 {{ end -}}
