@@ -42,7 +42,7 @@ jobs:
 
       - name: Initialize & Apply (Dry Run)
         # Now we run it exactly like a real user would
-        run: chezmoi apply --dry-run --exclude externals
+        run: chezmoi init --apply --dry-run --exclude externals
 
       - name: Run Chezmoi Doctor
         run: chezmoi doctor
