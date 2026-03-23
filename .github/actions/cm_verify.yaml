@@ -1,0 +1,42 @@
+name: "Verify Dotfiles"
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test-apply:
+    strategy:
+      matrix:
+        # This spins up two parallel jobs
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Chezmoi
+        # Using the binary script is faster than 'brew install' or 'apt-get'
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+
+      - name: Setup Mock Config
+        # Create a dummy chezmoi.yaml so templates don't crash on missing data
+        run: |
+          mkdir -p ~/.config/chezmoi
+          cat <<EOF > ~/.config/chezmoi/chezmoi.yaml
+          data:
+            email: "ci-test@example.com"
+            is_work: false
+            bazel_path: "/usr/local/bin/bazel"
+          EOF
+
+      - name: Initialize & Apply (Dry Run)
+        # --dry-run ensures we don't actually modify the GHA runner's system
+        # --verbose shows exactly what would have happened in the logs
+        run: chezmoi init --apply --dry-run --verbose --source=$GITHUB_WORKSPACE
+
+      - name: Run Chezmoi Doctor
+        # Useful for debugging environment mismatches in the logs
+        run: chezmoi doctor
