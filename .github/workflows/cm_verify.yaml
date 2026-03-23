@@ -24,6 +24,7 @@ jobs:
         run: |
           # 1. Pre-fill answers to skip interactive prompts
           mkdir -p ~/.config/chezmoi
+          chmod 700 ~/.config/chezmoi
           cat <<EOF > ~/.config/chezmoi/chezmoi.toml
           [data]
             name = "geonaut"
