@@ -8,7 +8,7 @@
     low_fidelity = {{ promptBoolOnce . "low_fidelity" "Use robust/low-fidelity UI (skip powerline glyphs)?" false }}
     using_bazel = {{ promptBoolOnce . "using_bazel" "Will you be using Bazel?" false }}
     using_k8s = {{ promptBoolOnce . "using_k8s" "Will you be using K8s?" false }}
-    using_tf = {{ promptBoolOnce . "using_k8s" "Will you be using Terraform?" false }}
+    using_tf = {{ promptBoolOnce . "using_tf" "Will you be using Terraform?" false }}
 
 
 {{ if eq .chezmoi.os "darwin" -}}
