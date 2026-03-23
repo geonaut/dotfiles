@@ -21,15 +21,18 @@ jobs:
         # Using the binary script is faster than 'brew install' or 'apt-get'
         run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
 
-      - name: Setup Mock Config
-        # Create a dummy chezmoi.yaml so templates don't crash on missing data
+      - name: Create Mock Config
         run: |
           mkdir -p ~/.config/chezmoi
-          cat <<EOF > ~/.config/chezmoi/chezmoi.yaml
-          data:
-            email: "ci-test@example.com"
-            is_work: false
-            bazel_path: "/usr/local/bin/bazel"
+          cat <<EOF > ~/.config/chezmoi/chezmoi.toml
+          [data]
+            name = "geonaut"
+            install_languages = false
+            is_server = false
+            low_fidelity = false
+            using_bazel = true
+            using_k8s = true
+            using_tf = true
           EOF
 
       - name: Initialize & Apply (Dry Run)
