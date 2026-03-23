@@ -1,3 +1,4 @@
+{{ if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
 
 # Brewfile hash: {{ includeTemplate "dot_Brewfile.tmpl" . | sha256sum }}
@@ -57,3 +58,4 @@ echo "⏭️ Skipping language installation as per config."
 {{- end }}
 
 echo "✅ Package installation and setup complete."
+{{ end -}}
