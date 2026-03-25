@@ -14,10 +14,12 @@ mkdir -p "$HOME/.local/bin" && sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME
 sudo apt update && sudo apt install -y curl && sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply geonaut
 ```
 
-## Testing on Ubuntu Server via Docker
+## Testing on Ubuntu via Docker
 
-* Create a long-running container `docker run -d --name zsh_test ubuntu:latest /bin/bash -c "while true; do sleep 3600; done"`
-* Exec into it `docker exec -it zsh_test /bin/login -f root`
-* One-liner
-* Stop container `docker stop zsh_test`
-* Delete container `docker rm zsh_test`
+```bash
+# Local repo (default) — mounts and applies your working copy
+./test/run.sh
+
+# Remote — fetches and applies from GitHub
+./test/run.sh --remote
+```
