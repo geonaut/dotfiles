@@ -30,10 +30,10 @@ jobs:
             name = "geonaut"
             install_languages = false
             is_server = false
-            low_fidelity = false
             using_bazel = true
             using_k8s = true
             using_tf = true
+            will_edit_cm = false
           EOF
 
           # 2. Symlink source so chezmoi (and doctor) finds it automatically
