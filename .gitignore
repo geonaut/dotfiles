@@ -4,3 +4,4 @@
 .zprofile_local
 .gitconfig_local
 *_local.*
+*.claude
