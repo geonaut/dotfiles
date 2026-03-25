@@ -6,7 +6,7 @@ return {
       -- This plugin automatically handles the filetype detection
       -- and allows you to :ChezmoiApply directly from Neovim
     })
-    
+
     -- Optional: Auto-apply on save
     vim.api.nvim_create_autocmd({ "BufWritePost" }, {
       pattern = { os.getenv("HOME") .. "/.local/share/chezmoi/*" },
