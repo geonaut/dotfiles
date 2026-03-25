@@ -78,14 +78,22 @@ export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --info=inline"
 bindkey '^[[A' up-line-or-search
 bindkey '^[[B' down-line-or-search
 
+eval "$(mise activate zsh)"
+
 #-- ALIASES --#
+
+alias home='ghostty -e zsh -lc "nvim -c \"cd $HOME\" -c \"Neotree show\"" > /dev/null 2>&1'
+# alias chez='ghostty -e zsh -lc "nvim -c \"Neotree $HOME/.local/share/chezmoi\"" > /dev/null 2>&1 &!'
+# alias chez='ghostty -e zsh -lc "nvim -c \"Neotree $HOME/.local/share/chezmoi\" -c \"botright 10split | terminal\"" > /dev/null 2>&1 &!'
+
+
 
 # --- VIM ---
 
 alias vim='nvim'
 alias vi='nvim'
 
-# --- TF ---
+# --- TF ---home
 
 alias tf='terraform'
 
@@ -95,6 +103,7 @@ alias k9s_local='k9s -c ns'
 
 # --- Chezmoi ---
 alias cm='chezmoi'
+alias chez='ghostty -e zsh -lc "nvim -c \"Neotree $HOME/.local/share/chezmoi\" -c \"botright 10split | term\" -c \"wincmd j | startinsert\"" > /dev/null 2>&1 &!'
 alias cma='cm_apply'
 alias cm_apply='chezmoi apply && source ~/.zshrc'
 alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
@@ -103,6 +112,7 @@ alias cm_bootstrap_linux='~/.local/share/chezmoi/bootstrap/ubuntu/bootstrap.sh'
 alias cm_rerun_questions='rm ~/.config/chezmoi/chezmoi.toml && chezmoi init && chezmoi apply'
 alias cm_ask_new_questions='chezmoi init && chezmoi apply'
 alias cm_edit='cd ~/.local/share/chezmoi'
+alias cm_merge='/Applications/Sublime\ Merge.app/Contents/SharedSupport/bin/smerge "$HOME/.local/share/chezmoi" &!'
 
 # --- OS Specifics ---
 {{ if eq .chezmoi.os "linux" -}}
@@ -128,6 +138,7 @@ alias git_rebase='git fetch origin main:main && git rebase main --autostash'
 alias main='git checkout main'
 
 # --- Starship Init ---
-if command -v starship &> /dev/null; then
+# Skip starship inside neovim's built-in terminal (glyphs render badly)
+if command -v starship &> /dev/null && [[ -z "$NVIM" ]]; then
     eval "$(starship init zsh)"
 fi
