@@ -5,3 +5,4 @@
 .gitconfig_local
 *_local.*
 *.claude
+.DS_Store
