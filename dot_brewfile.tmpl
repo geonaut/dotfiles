@@ -28,6 +28,7 @@ brew "neovim"
 brew "pre-commit"
 brew "gitleaks"
 
+
 {{ if .using_tf -}}
 tap "hashicorp/tap"
 brew "hashicorp/tap/terraform"
@@ -51,9 +52,7 @@ brew "derailed/k9s/k9s"
 {{- end }}
 
 {{ if .install_languages -}}
-brew "pyenv"
-brew "rustup-init"
-brew "goenv"
+brew "mise"
 {{- end }}
 
 # Applications (Casks)
