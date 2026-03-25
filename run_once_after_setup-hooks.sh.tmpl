@@ -11,6 +11,7 @@ if [ -d "$SOURCE_DIR/.git" ]; then
     if command -v pre-commit >/dev/null 2>&1; then
         cd "$SOURCE_DIR"
         # We use --install-hooks to ensure the environments are ready
+        pre-commit install
         pre-commit install --hook-type pre-push
         echo "✅ Pre-push hooks installed successfully."
     else
