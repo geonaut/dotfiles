@@ -41,6 +41,8 @@ PACKAGES=(
     "bat"
     "unzip"
     "build-essential"
+    "fontconfig"
+    "locales"
 )
 
 # 3. ADD DESKTOP DEPENDENCIES (if not a server)
@@ -49,18 +51,23 @@ info "Adding desktop-specific libraries to install list..."
 PACKAGES+=(
     "libgtk-4-dev"
     "libadwaita-1-dev"
-    "fontconfig"
+    "pre-commit"
 )
 {{- end }}
 
 # 4. EXECUTE INSTALLATION
 info "Syncing package manager..."
-sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get update
 
 info "Installing packages: ${PACKAGES[*]}"
-sudo apt-get install -y "${PACKAGES[@]}"
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${PACKAGES[@]}"
 
-# 5. SHELL CHANGE (Improved with error handling)
+# 5. LOCALE SETUP
+info "Generating en_GB.UTF-8 locale..."
+sudo sed -i 's/# en_GB.UTF-8/en_GB.UTF-8/' /etc/locale.gen
+sudo locale-gen
+
+# 6. SHELL CHANGE (Improved with error handling)
 TARGET_ZSH=$(command -v zsh)
 USER_NAME=$(whoami)
 
