@@ -1,3 +1,4 @@
+{{ if .will_edit_cm -}}
 #!/bin/bash
 
 # 1. Get the absolute path to your chezmoi source
@@ -21,3 +22,4 @@ else
     echo "If you are working out of a different folder (like 'yak'), make sure chezmoi knows that is the source."
     exit 1
 fi
+{{ end -}}

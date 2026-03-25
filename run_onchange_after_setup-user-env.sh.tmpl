@@ -40,7 +40,7 @@ if ! command -v starship >/dev/null; then
 fi
 
 # 3. DESKTOP SPECIFICS (Fonts and Terminal Config)
-{{ if and (eq .chezmoi.os "linux") (not .is_server) -}}
+{{ if eq .chezmoi.os "linux" -}}
 info "Applying Linux Desktop configurations..."
 FONT_DIR="$HOME/.local/share/fonts/Hack"
 if [ ! -d "$FONT_DIR" ]; then
