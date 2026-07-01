@@ -20,6 +20,12 @@ if ! command -v brew >/dev/null 2>&1; then
     exit 1
 fi
 
+# Homebrew 6+ requires non-core taps to be trusted before their formulae load.
+# Trust whatever taps are declared in ~/.brewfile (future-proof for new taps).
+while IFS= read -r t; do
+    [ -n "$t" ] && brew trust --tap "$t"
+done < <(grep -E '^[[:space:]]*tap "' "$HOME/.brewfile" | sed -E 's/.*tap "([^"]+)".*/\1/')
+
 brew bundle --file="$HOME/.brewfile"
 
 echo "--------------------------------------------------------"
