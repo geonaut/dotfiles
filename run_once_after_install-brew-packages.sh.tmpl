@@ -1,11 +1,12 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
+set -euo pipefail
 
-# Brewfile hash: {{ includeTemplate "dot_Brewfile.tmpl" . | sha256sum }}
-# This script re-runs whenever your Brewfile changes.
+# Brewfile hash: {{ include "dot_brewfile.tmpl" | sha256sum }}
+# Re-runs whenever ~/.brewfile changes (the hash above changes -> new script content).
 
 echo "--------------------------------------------------------"
-echo "🛠️  Starting Post-Apply Setup..."
+echo "🍺 Syncing Homebrew packages from ~/.brewfile ..."
 echo "--------------------------------------------------------"
 
 if [[ "$(uname -m)" == "arm64" ]]; then
@@ -14,25 +15,14 @@ else
     eval "$(/usr/local/bin/brew shellenv)"
 fi
 
-{{ if .install_languages -}}
-if command -v mise >/dev/null 2>&1; then
-    echo "🚀 mise found! Installing/Updating languages (Go, Python, Rust)..."
-
-    # This installs everything in ~/.config/mise/config.toml
-    mise install --yes
-
-    # This ensures the shims are ready for Neovim/Mason immediately
-    mise reshim
-
-    echo "✅ Languages synced via mise."
-else
-    echo "⚠️ mise not installed yet. It should install on the next run via Brew."
+if ! command -v brew >/dev/null 2>&1; then
+    echo "❌ Homebrew not installed. Install it first: https://brew.sh"
+    exit 1
 fi
-{{ else -}}
-echo "⏭️ Skipping language installation (opted-out in .chezmoi.toml)."
-{{- end }}
+
+brew bundle --file="$HOME/.brewfile"
 
 echo "--------------------------------------------------------"
-echo "✅ Setup complete!"
+echo "✅ Homebrew packages synced."
 echo "--------------------------------------------------------"
 {{ end -}}
