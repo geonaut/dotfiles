@@ -4,9 +4,10 @@
 export PATH="/opt/homebrew/bin:$PATH"
 fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
 
-# Add Homebrew's zsh functions to your fpath
+# Add Homebrew's zsh functions to your fpath (unversioned symlink paths survive
+# `brew upgrade zsh`; the core `functions` dir is where compinit/bashcompinit live).
 if type brew &>/dev/null; then
-  fpath=($(brew --prefix)/share/zsh/site-functions $fpath)
+  fpath=($(brew --prefix)/share/zsh/functions $(brew --prefix)/share/zsh/site-functions $fpath)
 fi
 
 # Initialize the completion system

@@ -1,13 +1,18 @@
 export LANG=en_US.UTF-8
 export LC_COLLATE=C
 
-typeset -U path PATH fpath FPATH
+typeset -U path PATH fpath
 
 if [[ "$(uname -m)" == "arm64" ]]; then
   [[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 else
   [[ -f /usr/local/bin/brew ]] && eval "$(/usr/local/bin/brew shellenv)"
 fi
+
+# `brew shellenv` exports FPATH tied to a *versioned* Cellar dir. If that leaks to
+# child processes (e.g. VSCode), a later `brew upgrade zsh` deletes the dir and new
+# shells inherit a dead FPATH that hides compinit. Keep fpath local; don't export it.
+typeset +x FPATH 2>/dev/null
 
 path=("$HOME/.local/share/mise/shims" $path)
 
