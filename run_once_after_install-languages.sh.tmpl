@@ -8,7 +8,10 @@ if command -v mise >/dev/null 2>&1; then
     # This replaces all the 'if ! goenv versions' logic
     mise install --yes
 
-    # 2. Show the active versions for peace of mind
+    # 2. Regenerate shims so Neovim/Mason pick them up immediately
+    mise reshim
+
+    # 3. Show the active versions for peace of mind
     echo "✅ Currently active versions:"
     mise ls --current
 else
