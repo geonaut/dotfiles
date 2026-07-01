@@ -27,6 +27,11 @@ brew "node"
 brew "neovim"
 brew "pre-commit"
 brew "gitleaks"
+brew "gh"
+brew "git-lfs"
+brew "yq"
+brew "uv"
+brew "semgrep"
 
 
 {{ if .using_tf -}}
@@ -47,6 +52,7 @@ brew "eksctl"
 brew "helm"
 brew "helmfile"
 brew "kind"
+brew "istioctl"
 tap "derailed/k9s"
 brew "derailed/k9s/k9s"
 {{- end }}
@@ -60,4 +66,5 @@ cask "visual-studio-code"
 cask "ghostty"
 cask "font-hack-nerd-font"
 cask "gcloud-cli"
+cask "session-manager-plugin"
 {{ end -}}
