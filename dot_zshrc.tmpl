@@ -116,7 +116,49 @@ alias k9s_local='k9s -c ns'
 alias cm='chezmoi'
 alias chez='ghostty -e zsh -lc "nvim -c \"Neotree $HOME/.local/share/chezmoi\" -c \"botright 10split | term\" -c \"wincmd j | startinsert\"" > /dev/null 2>&1 &!'
 alias cma='cm_apply'
-alias cm_apply='chezmoi apply && source ~/.zshrc'
+# cma — one-shot "refresh my machine". Just run `cma`: it applies dotfiles, then
+# syncs + upgrades brew (formulae & casks), then reloads the shell. Heavier/destructive
+# extras (greedy cask upgrade, cleanup) are offered as y/N prompts, default No — press
+# Enter to skip. Flags (optional):  -q = dotfiles only,  -y = assume yes to all prompts.
+_cma_ask() {  # y/N prompt; returns yes only if interactive and 'y' pressed
+  emulate -L zsh
+  [[ -o interactive && -t 0 ]] || return 1
+  local r; read -k1 "r?$1 [y/N] "; print
+  [[ $r == [yY] ]]
+}
+unalias cm_apply 2>/dev/null  # drop any stale alias so re-sourcing can (re)define the function
+cm_apply() {
+  emulate -L zsh
+  setopt local_options pipefail
+  local yes=0 quick=0 a
+  for a in "$@"; do case "$a" in
+    -y|--yes)   yes=1 ;;
+    -q|--quick) quick=1 ;;
+    *) print -u2 "cma: unknown option '$a' (use -q = dotfiles only, -y = assume yes)"; return 2 ;;
+  esac; done
+
+  print -P "%F{cyan}▸ chezmoi apply%f"
+  chezmoi apply || { print -u2 "cma: chezmoi apply failed"; return 1; }
+
+  if (( ! quick )) && command -v brew >/dev/null 2>&1; then
+    print -P "%F{cyan}▸ brew update%f"; brew update
+    if [[ -f ~/.brewfile ]]; then
+      print -P "%F{cyan}▸ brew bundle (install missing from ~/.brewfile)%f"
+      brew bundle --file="$HOME/.brewfile"
+    fi
+    print -P "%F{cyan}▸ brew upgrade (formulae + casks)%f"; brew upgrade
+    if (( yes )) || _cma_ask "Also upgrade auto-updating casks (greedy, slower)?"; then
+      print -P "%F{cyan}▸ brew upgrade --greedy%f"; brew upgrade --greedy
+    fi
+    if (( yes )) || _cma_ask "Remove old versions & clear cache (brew cleanup)?"; then
+      print -P "%F{cyan}▸ brew cleanup%f"; brew cleanup
+    fi
+  fi
+
+  print -P "%F{cyan}▸ reload shell%f"; source ~/.zshrc
+  if (( quick )); then print -P "%F{green}✓ dotfiles refreshed (brew skipped)%f"
+  else print -P "%F{green}✓ machine refreshed%f"; fi
+}
 alias cm_rebuild='chezmoi state delete-bucket --bucket=scriptState && chezmoi apply && source ~/.zshrc'
 alias cm_bootstrap_mac='~/.local/share/chezmoi/bootstrap/macos/bootstrap.sh'
 alias cm_bootstrap_linux='~/.local/share/chezmoi/bootstrap/ubuntu/bootstrap.sh'
