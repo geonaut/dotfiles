@@ -10,15 +10,18 @@ echo "🍺 Syncing Homebrew packages from ~/.brewfile ..."
 echo "--------------------------------------------------------"
 
 if [[ "$(uname -m)" == "arm64" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    brew_bin=/opt/homebrew/bin/brew
 else
-    eval "$(/usr/local/bin/brew shellenv)"
+    brew_bin=/usr/local/bin/brew
 fi
 
-if ! command -v brew >/dev/null 2>&1; then
-    echo "❌ Homebrew not installed. Install it first: https://brew.sh"
+if [ ! -x "$brew_bin" ]; then
+    echo "❌ Homebrew not installed ($brew_bin not found)."
+    echo "   Install it first: https://brew.sh"
     exit 1
 fi
+
+eval "$("$brew_bin" shellenv)"
 
 # Homebrew 6+ requires non-core taps to be trusted before their formulae load.
 # Trust whatever taps are declared in ~/.brewfile (future-proof for new taps).
