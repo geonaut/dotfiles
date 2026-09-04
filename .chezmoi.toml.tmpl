@@ -5,9 +5,10 @@
 
     # You could even add a 'workstation' flag for more granularity
     is_server = {{ promptBoolOnce . "is_server" "Is this a headless server?" false }}
-using_bazel = {{ promptBoolOnce . "using_bazel" "Will you be using Bazel?" false }}
+    using_bazel = {{ promptBoolOnce . "using_bazel" "Will you be using Bazel?" false }}
     using_k8s = {{ promptBoolOnce . "using_k8s" "Will you be using K8s?" false }}
     using_tf = {{ promptBoolOnce . "using_tf" "Will you be using Terraform?" false }}
+    using_claude = {{ promptBoolOnce . "using_claude" "Will you be using Claude Code?" true }}
     will_edit_cm = {{ promptBoolOnce . "will_edit_cm" "Will you be editing these dotfiles on this machine?" false }}
 
 
