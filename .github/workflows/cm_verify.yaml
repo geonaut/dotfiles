@@ -22,7 +22,9 @@ jobs:
 
       - name: Mock Environment
         run: |
-          # 1. Pre-fill answers to skip interactive prompts
+          # 1. Pre-fill answers to skip interactive prompts.
+          #    Every promptBoolOnce key in .chezmoi.toml.tmpl MUST appear here —
+          #    a missing key makes chezmoi try to open /dev/tty and the job fails.
           mkdir -p ~/.config/chezmoi
           chmod 700 ~/.config/chezmoi
           cat <<EOF > ~/.config/chezmoi/chezmoi.toml
@@ -33,6 +35,7 @@ jobs:
             using_bazel = true
             using_k8s = true
             using_tf = true
+            using_claude = true
             will_edit_cm = false
           EOF
 
