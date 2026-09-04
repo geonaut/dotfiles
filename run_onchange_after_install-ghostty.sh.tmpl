@@ -1,3 +1,4 @@
+{{ if eq .chezmoi.os "linux" -}}
 #!/bin/bash
 
 # Define helper for this script (in case it runs standalone)
@@ -26,3 +27,4 @@ echo "ℹ️  Server environment detected. Skipping Ghostty install."
 
 # Exit 0 ensures chezmoi marks this script as 'run' even if Ghostty failed
 exit 0
+{{ end -}}
